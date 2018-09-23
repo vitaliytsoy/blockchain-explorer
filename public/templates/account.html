@@ -1,0 +1,134 @@
+<div id="personalInfo" ng-init="getUserInfo();">
+    <div class="container">
+        <div class="panel-heading">
+            <div class="panel-title text-center">
+                <h1 class="title">Personal Account</h1>
+                <h4>{{user_info.username}}</h4>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <form class="form-horizontal" method="post" action="#" name="UserInfoForm">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label for="firstname" class="control-label">First Name</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                    <input ng-model="user_info.first_name" type="text" class="form-control" id="firstname" placeholder="Enter your Username" />
+                                </div>
+                                <div class="validation-message" ng-bind-html="incorrectUsername"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="control-label">Last Name</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                    <input ng-model="user_info.last_name" type="text" class="form-control" id="lastname" placeholder="Enter your Username" />
+                                </div>
+                                <div class="validation-message" ng-bind-html="incorrectUsername"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="organization" class="control-label">Organization</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                    <input ng-model="user_info.organization" type="text" class="form-control" id="organization" placeholder="Enter your Username" />
+                                </div>
+                                <div class="validation-message" ng-bind-html="incorrectUsername"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-5 col-sm-offset-2">
+                        <div class="form-group">
+                            <label for="password" class="control-label">New Password</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                    <input ng-model="user_info.password" ng-blur="validatePassword(user.password)" type="password" class="form-control" name="password" id="password" placeholder="Enter your new password" />
+                                </div>
+                            </div>
+                            <div class="validation-message" ng-bind-html="incorrectPassword"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm" class="control-label">Confirm New Password</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                    <input ng-model="user_info.confirmation" ng-blur="confirmPassword(user.password, user.confirmation)" type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm your new password" />
+                                </div>
+                            </div>
+                            <div class="validation-message">{{passwordsDoNotMatch}}</div>
+                        </div>
+                        <div class="form-group" style="">
+                            <button data-toggle="modal" data-target="#updateModal" ng-click="updateUserInfo()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Update</button>
+                        </div>
+                        <div class="validation-message">{{errorMessage}}</div>
+                    </div>
+                </form>
+            </div>
+            <!-- Update Fail/Success Modal -->
+            <div class="modal fade" id="updateModal" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body" align="center">
+                            <h4>{{updatedDataStatusMessage}}</h4>
+                            <div class="modal-success" ng-show="isUpdated" align="center">
+                                <span class="glyphicon glyphicon-ok"></span><h4>Successfully updated</h4>
+                            </div>
+                            <div class="modal-fail" ng-show="!isUpdated" align="center">
+                                <span class="glyphicon glyphicon-remove"></span><h4>Unable to update your personal data</h4>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br /><br /><br /><br /><br /><br />
+        </div>
+    </div>
+</div>
+
+<div class="container" id="accountExplore">
+    <div class="my-panel" class="word-wrap" ng-show="isAdmin" ng-init="getUsersList();initAdminState()">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3>Active users</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th><div class="table-header-margin">Username</div></th>
+                        <th><div class="table-header-margin">First Name</div></th>
+                        <th><div class="table-header-margin">Last Name</div></th>
+                        <th><div class="table-header-margin">Organization</div></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="user in users">
+                        <td class="word-wrap">{{user.username}}</td>
+                        <td class="word-wrap">{{user.first_name}}</td>
+                        <td class="word-wrap">{{user.last_name}}</td>
+                        <td class="word-wrap">{{user.organization}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+

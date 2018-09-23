@@ -1,0 +1,112 @@
+<div class="container" id="sendPanel">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="modal-title"><span class="glyphicon glyphicon-send"></span> Send</h4>
+            <br />
+            <span class="text-muted">Instantly send secure data to anyone</span>
+        </div>
+        <div class="panel-body">
+            <!-- Share -->
+            <button ng-click="requestUserInfo()" ng-show="isSignedIn" type="button" class="btn btn-default btn-sm btn-share" data-toggle="modal" data-target="#receiveModal">
+                <span class="glyphicon glyphicon-share"></span> Share
+            </button>
+            <div class="modal fade" id="receiveModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-share"></span>Share</h4>
+                            <br />
+                            <span class="text-muted">Instantly receive secure data from any address</span>
+                        </div>
+                        <div class="modal-body">
+                            <span class="text-emphasize">Copy and share:</span>
+                            <br />
+                            <div class="alert alert-info" role="alert" class="word-wrap">
+                                <span class="glyphicon glyphicon-copy"></span> {{user.username}}
+                            </div>
+                            Copy and share your username with your sender via email, text, etc.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group" ng-show="!isSignedIn">
+                    <b>From:</b>
+                    <h4>Upload your public key certificate</h4>
+                    <input type="file" ngf-select ng-model="up.priv" name="file" onchange="angular.element(this).scope().pubFileInputChanged()"/><br />
+                    <button ng-disabled="pubFileInput" ng-click="upload(up.priv)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-upload"></span> Upload
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="to_u">
+                        To:
+                        <br />
+                        <span class="text-label">username</span>
+                    </label>
+                    <input ng-blur="validateTransactionReceiverUsername(tx.receiverUsername)" ng-model="tx.receiverUsername" type="text" class="form-control" id="to_u">
+                    <div class="validation-message" ng-bind-html="invalidReceiver"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="data">
+                    Data:
+                    <br />
+                    <span class="text-label">Your message</span>
+                </label>
+                <textarea required ng-model="tx.data" class="form-control" rows="5" id="data"></textarea>
+            </div>
+            <div class="form-group">
+                <input type="file" ngf-select ng-model="up.send_file" name="file"/><br />
+                <button ng-click="upload_file(up.send_file)" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-upload"></span> Upload </button>
+            </div>
+
+            <div class="form-group">
+                <b>Signature:</b>
+                <h4>Upload your private key</h4>
+                <input type="file" ngf-select ng-model="up.pub" name="file" onchange="angular.element(this).scope().privFileInputChanged()"/><br />
+                <button ng-disabled="privFileInput" ng-click="upload(up.pub)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-upload"></span> Upload
+                </button>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button ng-disabled="invalidSend || invalidRec || invalidSign" ng-click="signEncryptSend(isSignedIn)" type="button" data-toggle="modal" data-target="#myModal" class="btn btn-default">Send</button>
+        </div>
+    </div>
+</div>
+<!--Transaction Success / Fail-->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" align="center">
+                <h4>{{transactionStatusMessage}}</h4>
+                <span ng-show="transactionSent" class="modal-success glyphicon glyphicon-ok-circle"></span>
+                <span ng-show="!transactionSent" class="modal-fail glyphicon glyphicon-remove-circle"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Fail/Success Modal -->
+<div class="modal fade" id="uploadModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" align="center">
+                <h4>{{uploadFileStatusMessage}}</h4>
+                <span ng-show="isUploaded" class="modal-success glyphicon glyphicon-download-alt"></span>
+                <span ng-show="!isUploaded" class="modal-fail glyphicon glyphicon-download-alt"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

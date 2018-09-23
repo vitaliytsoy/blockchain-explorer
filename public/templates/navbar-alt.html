@@ -1,0 +1,34 @@
+
+<nav class="navbar alt-navbar navbar-inverse navbar-fixed-top" ng-style="myStyle" ng-init="initUserState(user)">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" onclick="changeStatus()" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" ui-sref="home">Hyper Record</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li ng-show="!isSignedIn"><a ui-sref="keygen">Key Generator</a></li>
+                <li><a ui-sref="send">Block Generator</a></li>
+            </ul>
+            <ul class="nav navbar-nav pull-right" ng-init="requestUserInfo()">
+                <li class="personal-message" ng-show="isSignedIn">
+                    <p>Welcome back, <a ui-sref="account"><span>{{user.username}}</span></a></p>
+                </li>
+                <li>
+                    <button ui-sref="signup" ng-model="navbarToggle" ng-show="!isSignedIn" type="button" class="btn btn-primary navbar-btn">Sign Up</button>
+                </li>
+                <li>
+                    <button ui-sref="signin" ng-show="!isSignedIn" type="button" class="btn btn-primary navbar-btn">Sign In</button>
+                </li>
+                <li>
+                    <button ng-click="signOut()" ng-show="isSignedIn" type="button" class="btn btn-primary navbar-btn">Sign Out</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

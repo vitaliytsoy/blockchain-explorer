@@ -1,0 +1,189 @@
+<div class="container" id="explorePanel">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="modal-title"><span class="glyphicon glyphicon-tasks"></span> Explorer</h4>
+            <br />
+            <span class="text-muted">Explore your data</span>
+        </div>
+        <div class="panel-body">
+            <!-- Share -->
+            <button ng-click="requestUserInfo()" ng-show="isSignedIn" type="button" class="btn btn-default btn-sm btn-share" data-toggle="modal" data-target="#receiveModal">
+                <span class="glyphicon glyphicon-share"></span> Share
+            </button>
+            <div class="modal fade" id="receiveModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-share"></span>Share</h4>
+                            <br />
+                            <span class="text-muted">Instantly receive secure data from any address</span>
+                        </div>
+                        <div class="modal-body">
+                            <span class="text-emphasize">Copy and share:</span>
+                            <br />
+                            <div class="alert alert-info" role="alert" class="word-wrap">
+                                <span class="glyphicon glyphicon-copy"></span> {{user.username}}
+                            </div>
+                            Copy and share your username with your sender via email, text, etc.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 ng-show="!isSignedIn">Upload your public key certificate</h4>
+            <input ng-show="!isSignedIn" type="file" ngf-select ng-model="up.file" name="file" onchange="angular.element(this).scope().pubFileInputChanged()"/><br />
+            <button ng-disabled="pubFileInput" ng-show="!isSignedIn" ng-click="upload(up.file)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-upload"></span> Upload
+            </button>
+
+            <h4>Upload your private key</h4>
+            <input type="file" ngf-select ng-model="up.file" name="file" onchange="angular.element(this).scope().privFileInputChanged()"/><br />
+            <button ng-disabled="privFileInput" ng-click="upload(up.file)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-upload"></span> Upload
+            </button>
+
+            <div ng-show="!isSignedIn">
+                <div align="right">
+                    <button ng-disabled="pubFileInput" ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
+                    </button>
+                </div>
+                <div align="right">
+                    <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
+                    </button>
+                </div>
+            </div>
+            <div ng-show="isSignedIn">
+                <div align="right">
+                    <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
+                    </button>
+                </div>
+                <div align="right">
+                    <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
+                    </button>
+                </div>
+            </div>
+
+            <br />
+            <table ng-show="hidetxs" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th><div class="table-header-margin">From</div></th>
+                    <th><div class="table-header-margin">Signature</div></th>
+                    <th><div class="table-header-margin">Timestamp</div></th>
+                    <th><div class="table-header-margin">Data</div></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="tx in txs">
+                    <td class="word-wrap">{{tx.sender_public_key}}</td>
+                    <td class="word-wrap">
+                        {{tx.signature}}
+                        <br />
+                        <div align="right">
+                            <button ng-disabled="invalidPrivateKey" ng-click="verifyTransaction(tx)" data-toggle="modal" data-target="#verified" type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-ok"></span> Verify
+                            </button>
+                        </div>
+                    </td>
+                    <td class="word-wrap">{{tx.timestamp}}</td>
+                    <td class="word-wrap">
+                        {{tx.data.iv + tx.data.ephem_public_key + tx.data.ciphertext + tx.data.mac}}
+                        <br />
+                        <div align="right">
+                            <button ng-disabled="invalidPrivateKey && invalidPublicKey" ng-click="decryptData(tx.data)" data-toggle="modal" data-target="#decrypted" type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-lock"></span> Read
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Decrypt -->
+<div class="modal fade" id="decrypted" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span>Decrypted data:</h4>
+                <br />
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info" ng-bind-html="decrypted"></div>
+                <div class="form-group">
+                    <label for="to_u_f">
+                        Forward To:
+                        <br />
+                        <span class="text-label">username</span>
+                    </label>
+                    <input ng-blur="validateTransactionReceiverUsernameForward(txf.receiverUsername)" ng-model="txf.receiverUsername" type="text" class="form-control" id="to_u_f">
+                    <div class="validation-message" ng-bind-html="invalidReceiverForward"></div>
+                    <br />
+                </div>
+                <div class="form-group">
+                    <h4>Upload your private key</h4>
+                    <input type="file" ngf-select ng-model="up.file" name="file"/><br />
+                    <button ng-click="upload(up.file)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-upload"></span> Upload
+                    </button>
+                </div>
+                <div align="center">
+                    <button ng-click="forward()" data-toggle="modal" data-target="#myModal" ng-disabled="invalidRecForward || invalidSignForward" type="button" class="btn btn-default" data-dismiss="modal">
+                        Forward
+                        <span class="glyphicon glyphicon-arrow-right"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Verify -->
+<div class="modal fade" id="verified" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="modal-success" ng-show="verified && !invalidPrivateKey" align="center">
+                    <span class="glyphicon glyphicon-ok"></span> Valid Signature
+                </div>
+                <div class="modal-fail" ng-show="!verified && !invalidPrivateKey" align="center">
+                    <span class="glyphicon glyphicon-remove"></span> Invalid Signature
+                </div>
+                <div class="modal-fail" ng-show="invalidPrivateKey" align="center">
+                    <span class="glyphicon glyphicon-remove-sign"></span> Unable to verify the transaction: bad private key.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>]
+</div>
+
+<!-- Upload Fail/Success Modal -->
+<div class="modal fade" id="uploadModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" align="center">
+                <h4>{{uploadFileStatusMessage}}</h4>
+                <span ng-show="isUploaded" class="modal-success glyphicon glyphicon-download-alt"></span>
+                <span ng-show="!isUploaded" class="modal-fail glyphicon glyphicon-download-alt"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
